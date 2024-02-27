@@ -38,4 +38,17 @@ paths:
             application/json:
               schema:
                 type: object
-                additionalProperties: true
+                properties:
+                  searchInformation:
+                    type: object
+                    properties:
+                      totalResults:
+                        type: integer
+                      searchTimeSeconds:
+                        type: number
+                      formattedSearchTime:
+                        type: string
+                  items:
+                    type: array
+                    items:
+                      type: object
