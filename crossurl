@@ -13,7 +13,7 @@ paths:
       operationId: getCrossrefWorks
       parameters:
         - in: query
-          name: query.bibliographic
+          name: bibliographic_query
           required: true
           schema:
             type: string
@@ -40,9 +40,9 @@ paths:
                 properties:
                   status:
                     type: string
-                  message-type:
+                  messageType:
                     type: string
-                  message-version:
+                  messageVersion:
                     type: string
                   message:
                     type: object
@@ -51,14 +51,14 @@ paths:
                         type: array
                         items:
                           type: object
-                      total-results:
+                      totalResults:
                         type: integer
-                      items-per-page:
+                      itemsPerPage:
                         type: integer
                       query:
                         type: object
                         properties:
-                          search-terms:
+                          searchTerms:
                             type: string
-                          start-index:
+                          startIndex:
                             type: integer
