@@ -1,23 +1,25 @@
 openapi: 3.0.0
 info:
   title: Web of Science API Integration
-  description: Utilize Web of Science Expanded API for robust searching and data integration.
+  description: |
+    This API provides access to the Web of Science Expanded API for conducting searches and retrieving academic publications.
   version: 1.0.0
 servers:
   - url: https://api.clarivate.com/api/wos
     description: Main server for Web of Science Expanded API
 paths:
-  /:
+  /search:
     get:
       summary: Execute a search query using Web of Science Expanded API.
       operationId: webOfScienceSearch
+      description: |
+        This endpoint allows you to perform searches using the Web of Science Expanded API. You can search for academic publications based on various criteria such as keywords, authors, or publication dates.
       parameters:
         - in: header
           name: X-ApiKey
           required: true
           schema:
             type: string
-            default: " af47e72315c5c580bf69a0c1d7e8ee8ed07f6698" # Replace with your actual API key.
           description: Your Web of Science API key.
         - in: query
           name: databaseId
@@ -25,31 +27,55 @@ paths:
           schema:
             type: string
           description: The database identifier for the search.
+          example: WOS
         - in: query
           name: userQuery
           required: true
           schema:
             type: string
           description: The search query.
+          example: "cyber security"
         - in: query
           name: edition
           schema:
             type: string
           description: The edition of the database to search.
+          example: SCI
         - in: query
           name: lang
           schema:
             type: string
             default: "en"
           description: Language of the response.
-    responses:
+          example: en
+      responses:
         '200':
           description: Successful response with the search results from Web of Science Expanded API.
           content:
             application/json:
               schema:
                 type: object
-                additionalProperties: true
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          description: The title of the publication.
+                        author:
+                          type: array
+                          items:
+                            type: string
+                          description: The author(s) of the publication.
+                        publication_date:
+                          type: string
+                          format: date
+                          description: The publication date of the publication.
+                        url:
+                          type: string
+                          description: The URL of the publication.
         '400':
           description: Bad request, such as malformed request syntax or invalid query parameters.
         '401':
