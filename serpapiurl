@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: SerpApi Integration
-  description: Search data via SerpApi.
+  title: SerpApi Google Scholar Integration
+  description: Scrape SERP results from Google Scholar search queries using SerpApi.
   version: 1.0.0
 servers:
   - url: https://serpapi.com
@@ -9,46 +9,53 @@ servers:
 paths:
   /search:
     get:
-      summary: Execute a search query using SerpApi.
-      operationId: serpApiSearch
+      summary: Execute a search query using Google Scholar through SerpApi.
+      operationId: googleScholarSearch
       parameters:
         - in: query
           name: engine
           required: true
           schema:
             type: string
-          description: The search engine to use, such as google, bing, etc.
+            default: 'google_scholar'
+          description: Set to 'google_scholar' to use the Google Scholar API engine.
         - in: query
           name: q
-          required: true
+          required: false
           schema:
             type: string
-          description: The search query.
+          description: Defines the query to search.
+        - in: query
+          name: as_ylo
+          required: false
+          schema:
+            type: string
+          description: Defines the start year for the search results.
+        - in: query
+          name: as_yhi
+          required: false
+          schema:
+            type: string
+          description: Defines the end year for the search results.
         - in: query
           name: api_key
           required: true
           schema:
             type: string
-            default: "c23ed2208a390b88522e11ea9d9a4884d092a037a0e56e5b23f27403a87c7b3b"
           description: Your SerpApi API key.
       responses:
         '200':
-          description: Successful response with the search results from SerpApi.
+          description: Successful response with search results.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  searchInformation:
+                  search_metadata:
                     type: object
-                    properties:
-                      totalResults:
-                        type: integer
-                      searchTimeSeconds:
-                        type: number
-                      formattedSearchTime:
-                        type: string
-                  items:
+                  search_parameters:
+                    type: object
+                  search_information:
+                    type: object
+                  organic_results:
                     type: array
-                    items:
-                      type: object
