@@ -1,16 +1,20 @@
 openapi: 3.0.0
 info:
-  title: Crossref API
-  description: Access bibliographic records from Crossref.
-  version: 1.0.0
+  title: Crossref, SerpApi, and Web of Science API Integration
+  description: Access bibliographic records from Crossref, search data via SerpApi, and utilize Web of Science Expanded API for robust searching and data integration.
+  version: 3.0.0
 servers:
   - url: https://api.crossref.org
     description: Main production server for Crossref API
+  - url: https://serpapi.com
+    description: Main server for SerpApi
+  - url: https://api.clarivate.com/api/wos
+    description: Main server for Web of Science Expanded API
 paths:
   /works:
     get:
       operationId: getWorks
-      summary: Retrieve works based on bibliographic information.
+      summary: Retrieve works based on bibliographic information from Crossref.
       parameters:
         - in: query
           name: query.bibliographic
@@ -51,7 +55,6 @@ paths:
                         type: array
                         items:
                           type: object
-                          # Define more properties based on the required details from the response
                       total-results:
                         type: integer
                       items-per-page:
@@ -67,5 +70,96 @@ paths:
           description: Bad request, such as malformed request syntax or invalid query parameters.
         '404':
           description: No matching works found.
+        '500':
+          description: Internal Server Error - something has gone wrong on the server side.
+  /search:
+    get:
+      operationId: serpApiSearch
+      summary: Execute a search query using SerpApi.
+      parameters:
+        - in: query
+          name: engine
+          required: true
+          schema:
+            type: string
+          description: The search engine to use, such as google, bing, etc.
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+          description: The search query.
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+            default: "c23ed2208a390b88522e11ea9d9a4884d092a037a0e56e5b23f27403a87c7b3b"
+          description: Your SerpApi API key.
+      responses:
+        '200':
+          description: Successful response with the search results.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Bad request, such as malformed request syntax or invalid query parameters.
+        '401':
+          description: Unauthorized, typically due to an invalid API key.
+        '429':
+          description: Too many requests - exceeded SerpApi rate limits.
+        '500':
+          description: Internal Server Error - something has gone wrong on the server side.
+/:
+    get:
+      operationId: webOfScienceSearch
+      summary: Execute a search query using Web of Science Expanded API.
+      parameters:
+        - in: header
+          name: X-ApiKey
+          required: true
+          schema:
+            type: string
+            default: "af47e72315c5c580bf69a0c1d7e8ee8ed07f6698"
+          description: Your Web of Science API key.
+        - in: query
+          name: databaseId
+          required: true
+          schema:
+            type: string
+          description: The database identifier for the search.
+        - in: query
+          name: userQuery
+          required: true
+          schema:
+            type: string
+          description: The search query.
+        - in: query
+          name: edition
+          schema:
+            type: string
+          description: The edition of the database to search.
+        - in: query
+          name: lang
+          schema:
+            type: string
+            default: "en"
+          description: Language of the response.
+      responses:
+        '200':
+          description: Successful response with the search results.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Bad request, such as malformed request syntax or invalid query parameters.
+        '401':
+          description: Unauthorized, typically due to an invalid API key.
+        '403':
+          description: Forbidden, access to the resource is denied.
         '500':
           description: Internal Server Error - something has gone wrong on the server side.
