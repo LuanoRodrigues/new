@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Crossref API Integration
+  title: Crossref API
   description: Access bibliographic records from Crossref.
   version: 1.0.0
 servers:
@@ -9,11 +9,11 @@ servers:
 paths:
   /works:
     get:
-      summary: Retrieve works based on bibliographic information from Crossref.
-      operationId: getCrossrefWorks
+      operationId: getWorks
+      summary: Retrieve works based on bibliographic information.
       parameters:
         - in: query
-          name: bibliographic_query
+          name: query.bibliographic
           required: true
           schema:
             type: string
@@ -22,7 +22,7 @@ paths:
           name: rows
           schema:
             type: integer
-            default: 30
+            default: 20
           description: Number of results to return per page.
         - in: query
           name: offset
@@ -32,7 +32,7 @@ paths:
           description: Offset of the first result to return.
       responses:
         '200':
-          description: Successful response with the list of works from Crossref.
+          description: Successful response with the list of works.
           content:
             application/json:
               schema:
@@ -40,9 +40,9 @@ paths:
                 properties:
                   status:
                     type: string
-                  messageType:
+                  message-type:
                     type: string
-                  messageVersion:
+                  message-version:
                     type: string
                   message:
                     type: object
@@ -51,14 +51,21 @@ paths:
                         type: array
                         items:
                           type: object
-                      totalResults:
+                          # Define more properties based on the required details from the response
+                      total-results:
                         type: integer
-                      itemsPerPage:
+                      items-per-page:
                         type: integer
                       query:
                         type: object
                         properties:
-                          searchTerms:
+                          search-terms:
                             type: string
-                          startIndex:
+                          start-index:
                             type: integer
+        '400':
+          description: Bad request, such as malformed request syntax or invalid query parameters.
+        '404':
+          description: No matching works found.
+        '500':
+          description: Internal Server Error - something has gone wrong on the server side.
