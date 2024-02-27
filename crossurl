@@ -11,10 +11,10 @@ servers:
   - url: https://api.clarivate.com/api/wos
     description: Main server for Web of Science Expanded API
 paths:
-  /works:
+  /crossrefWorks:
     get:
-      operationId: getWorks
       summary: Retrieve works based on bibliographic information from Crossref.
+      operationId: getCrossrefWorks
       parameters:
         - in: query
           name: query.bibliographic
@@ -36,7 +36,7 @@ paths:
           description: Offset of the first result to return.
       responses:
         '200':
-          description: Successful response with the list of works.
+          description: Successful response with the list of works from Crossref.
           content:
             application/json:
               schema:
@@ -72,10 +72,11 @@ paths:
           description: No matching works found.
         '500':
           description: Internal Server Error - something has gone wrong on the server side.
-  /search:
+
+  /serpapiSearch:
     get:
-      operationId: serpApiSearch
       summary: Execute a search query using SerpApi.
+      operationId: serpApiSearch
       parameters:
         - in: query
           name: engine
@@ -98,7 +99,7 @@ paths:
           description: Your SerpApi API key.
       responses:
         '200':
-          description: Successful response with the search results.
+          description: Successful response with the search results from SerpApi.
           content:
             application/json:
               schema:
@@ -112,10 +113,11 @@ paths:
           description: Too many requests - exceeded SerpApi rate limits.
         '500':
           description: Internal Server Error - something has gone wrong on the server side.
-  /:
+
+  /webOfScienceSearch:
     get:
-      operationId: webOfScienceSearch
       summary: Execute a search query using Web of Science Expanded API.
+      operationId: webOfScienceSearch
       parameters:
         - in: header
           name: X-ApiKey
@@ -149,7 +151,7 @@ paths:
           description: Language of the response.
       responses:
         '200':
-          description: Successful response with the search results.
+          description: Successful response with the search results from Web of Science Expanded API.
           content:
             application/json:
               schema:
