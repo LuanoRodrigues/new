@@ -1,0 +1,46 @@
+openapi: 3.0.0
+info:
+  title: Crossref API
+  description: Access to Crossref's metadata via REST API.
+  version: 1.0.0
+servers:
+  - url: https://api.crossref.org
+    description: Main (production) server
+paths:
+  /works:
+    get:
+      operationId: searchWorks
+      summary: Search for works by bibliographic information.
+      parameters:
+        - in: query
+          name: query.bibliographic
+          required: true
+          schema:
+            type: string
+          description: Bibliographic information keywords to search for.
+      responses:
+        '200':
+          description: A list of works matching the query.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message-type:
+                    type: string
+                  message-version:
+                    type: string
+                  message:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          # Define properties for each item as needed
+        '400':
+          description: Bad request, such as missing required parameters.
+        '404':
+          description: No matching works found.
