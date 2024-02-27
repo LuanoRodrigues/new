@@ -42,7 +42,7 @@ paths:
             type: string
             default: "en"
           description: Language of the response.
-      responses:
+    responses:
         '200':
           description: Successful response with the search results from Web of Science Expanded API.
           content:
@@ -50,3 +50,11 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+        '400':
+          description: Bad request, such as malformed request syntax or invalid query parameters.
+        '401':
+          description: Unauthorized, typically due to an invalid API key.
+        '403':
+          description: Forbidden, access to the resource is denied.
+        '500':
+          description: Internal Server Error - something has gone wrong on the server side.
