@@ -19,7 +19,7 @@ paths:
           name: X-ApiKey
           required: true
           schema:
-            type: string
+            type:  "af47e72315c5c580bf69a0c1d7e8ee8ed07f6698"
           description: Your Web of Science API key.
         - in: query
           name: databaseId
