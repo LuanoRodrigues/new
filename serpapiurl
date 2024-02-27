@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  title: SerpApi Integration
+  description: Search data via SerpApi.
+  version: 1.0.0
+servers:
+  - url: https://serpapi.com
+    description: Main server for SerpApi
+paths:
+  /search:
+    get:
+      summary: Execute a search query using SerpApi.
+      operationId: serpApiSearch
+      parameters:
+        - in: query
+          name: engine
+          required: true
+          schema:
+            type: string
+          description: The search engine to use, such as google, bing, etc.
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+          description: The search query.
+        - in: query
+          name: api_key
+          required: true
+          schema:
+            type: string
+            default: "c23ed2208a390b88522e11ea9d9a4884d092a037a0e56e5b23f27403a87c7b3b"
+          description: Your SerpApi API key.
+      responses:
+        '200':
+          description: Successful response with the search results from SerpApi.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
