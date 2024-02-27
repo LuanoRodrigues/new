@@ -112,7 +112,7 @@ paths:
           description: Too many requests - exceeded SerpApi rate limits.
         '500':
           description: Internal Server Error - something has gone wrong on the server side.
-/:
+  /:
     get:
       operationId: webOfScienceSearch
       summary: Execute a search query using Web of Science Expanded API.
