@@ -1,26 +1,38 @@
 openapi: 3.0.0
 info:
   title: Crossref API
-  description: Access to Crossref's metadata via REST API.
+  description: Access bibliographic records from Crossref.
   version: 1.0.0
 servers:
   - url: https://api.crossref.org
-    description: Main (production) server
+    description: Main production server for Crossref API
 paths:
   /works:
     get:
-      operationId: searchWorks
-      summary: Search for works by bibliographic information.
+      operationId: getWorks
+      summary: Retrieve works based on bibliographic information.
       parameters:
         - in: query
           name: query.bibliographic
           required: true
           schema:
             type: string
-          description: Bibliographic information keywords to search for.
+          description: Bibliographic information to search for, such as title, author, or keywords.
+        - in: query
+          name: rows
+          schema:
+            type: integer
+            default: 20
+          description: Number of results to return per page.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+          description: Offset of the first result to return.
       responses:
         '200':
-          description: A list of works matching the query.
+          description: Successful response with the list of works.
           content:
             application/json:
               schema:
@@ -39,8 +51,21 @@ paths:
                         type: array
                         items:
                           type: object
-                          # Define properties for each item as needed
+                          # Define more properties based on the required details from the response
+                      total-results:
+                        type: integer
+                      items-per-page:
+                        type: integer
+                      query:
+                        type: object
+                        properties:
+                          search-terms:
+                            type: string
+                          start-index:
+                            type: integer
         '400':
-          description: Bad request, such as missing required parameters.
+          description: Bad request, such as malformed request syntax or invalid query parameters.
         '404':
           description: No matching works found.
+        '500':
+          description: Internal Server Error - something has gone wrong on the server side.
