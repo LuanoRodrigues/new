@@ -124,6 +124,8 @@ components:
           type: array
           nullable: true
           description: List of OA Location objects associated with this resource that are not yet available.
+          items:
+            $ref: "#/components/schemas/OALocation"
         first_oa_location:
           $ref: "#/components/schemas/OALocation"
         oa_status:
@@ -155,6 +157,9 @@ components:
           type: array
           nullable: true
           description: List of Crossref Contributor objects, or null.
+          items:
+            type: object
+        operationId: getDOIInfo
     OALocation:
       type: object
       properties:
