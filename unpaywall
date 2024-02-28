@@ -1,120 +1,217 @@
 openapi: 3.0.0
 info:
   title: Unpaywall API
-  description: Free, programmatic access to the Unpaywall database
-  version: 2.0.0
+  description: Provides JSON-formatted data regarding DOI-assigned resources, including metadata and Open Access (OA) status. The API supports database snapshots, a Simple Query Tool, REST API, and Data Feed products, all using a unified schema. This schema features the DOI Object containing all known data for a DOI-assigned resource, including its OA status and associated OA Location Objects.
+  version: 1.0.0
 servers:
   - url: https://api.unpaywall.org/v2
 paths:
-  /search:
+  /{doi}:
     get:
-      summary: Search for articles
-      description: Provides the full GET /v2/:doi responses for articles whose titles match your query.
-      operationId: searchArticles
+      summary: Retrieve information for a given DOI
+      description: Fetches detailed information about the resource assigned to the specified DOI, including metadata and OA status.
+      operationId: getDOIDetails
       parameters:
-        - name: query
-          in: query
-          description: The text to search for. Search terms are separated by whitespace.
+        - in: path
+          name: doi
           required: true
           schema:
             type: string
-          example: "cell thermometry"
-        - name: is_oa
-          in: query
-          description: A boolean value indicating whether to filter results to OA articles.
+          description: The DOI of the resource to retrieve information for.
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+          example: luhan.servidor@gmail.com
+          description: Your email address for identification and tracking purposes, as required by Unpaywall API usage policies.
+      responses:
+        200:
+          description: Successfully retrieved DOI information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DOIObject'
+        404:
+          description: The specified DOI was not found in the database.
+  /search:
+    get:
+      summary: Search for articles based on query parameters
+      description: Allows searching for articles that match specific criteria, such as title, journal, or OA status.
+      operationId: searchArticles
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+          description: The search terms to query for in the article titles.
+        - in: query
+          name: is_oa
           required: false
           schema:
             type: boolean
-          example: true
-        - name: page
-          in: query
-          description: An integer indicating which page of results should be returned.
+          description: Filter the search results to only include Open Access articles.
+        - in: query
+          name: page
           required: false
           schema:
             type: integer
-          example: 1
-        - name: email
-          in: query
-          description: Your email for authentication and identification.
+          description: The page number of search results to retrieve.
+        - in: query
+          name: email
           required: true
           schema:
             type: string
-          example: "luhan.servidor@gmail.com"
+          example: luhan.servidor@gmail.com
+          description: Your email address for identification and tracking purposes, as required by Unpaywall API usage policies.
       responses:
-        '200':
-          description: OK
+        200:
+          description: Successfully retrieved search results.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SearchResult"
+                  $ref: '#/components/schemas/DOIObject'
+        400:
+          description: Invalid query parameters provided.
 
-  /{doi}:
-    get:
-      summary: Get OA status and bibliographic info for a given DOI
-      description: Retrieves OA status and bibliographic information for a specified DOI-assigned resource.
-      operationId: getDOIInfo
-      parameters:
-        - name: doi
-          in: path
-          description: DOI of the resource
-          required: true
-          schema:
-            type: string
-          example: "10.1038/nature12373"
-        - name: email
-          in: query
-          description: Your email for authentication and identification.
-          required: true
-          schema:
-            type: string
-          example: "luhan.servidor@gmail.com"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DOIObject"
 components:
   schemas:
-    # Other schemas...
+    DOIObject:
+      type: object
+      properties:
+        best_oa_location:
+          $ref: '#/components/schemas/OALocation'
+          nullable: true
+          description: The best OA Location Object found for this DOI, determined by an algorithm prioritizing publisher-hosted content first, versions closer to the version of record second, and more authoritative repositories third. Returns null if no OA Locations are found.
+        data_standard:
+          type: integer
+          description: Indicates the data collection approaches used for this resource. Value 1 represents first-generation hybrid detection using only Crossref API data, mostly effective for Elsevier articles. Value 2 represents second-generation hybrid detection, checking all publishers and significantly increasing hybrid article detection.
+        doi:
+          type: string
+          description: The DOI of this resource, always in lowercase.
+        doi_url:
+          type: string
+          description: The DOI formatted as a hyperlink according to Crossref DOI display guidelines.
+        genre:
+          type: string
+          nullable: true
+          description: The type of resource, usually identical to the Crossref-reported type.
+        is_paratext:
+          type: boolean
+          description: Whether the item is considered ancillary to the main content, like a table of contents or index.
+        is_oa:
+          type: boolean
+          description: True if there is an OA copy of this resource, determined by the presence of a best_oa_location.
+        journal_is_in_doaj:
+          type: boolean
+          description: Whether this resource is published in a journal indexed by DOAJ, useful for identifying Gold OA resources.
+        journal_is_oa:
+          type: boolean
+          description: Whether this resource is published in a fully OA journal.
+        journal_issns:
+          type: string
+          nullable: true
+          description: Any ISSNs assigned to the journal publishing this resource, separated by commas if multiple.
+        journal_issn_l:
+          type: string
+          nullable: true
+          description: A single ISSN for the journal, used as a primary key when multiple ISSNs exist.
+        journal_name:
+          type: string
+          nullable: true
+          description: The name of the journal publishing this resource, which may vary in string representation.
+        oa_locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/OALocation'
+          description: A list of all OA Location objects associated with this resource.
+        oa_locations_embargoed:
+          type: array
+          items:
+            $ref: '#/components/schemas/OALocation'
+          nullable: true
+          description: OA Location objects associated with this resource that are not yet available due to embargo policies.
+        first_oa_location:
+          $ref: '#/components/schemas/OALocation'
+          nullable: true
+          description: The first OA Location Object available for this resource, based on the oa_date.
+        oa_status:
+          type: string
+          description: The OA status or 'color' of this resource, such as gold, hybrid, bronze, green, or closed.
+        has_repository_copy:
+          type: boolean
+          description: True if there is a copy of this resource in a repository.
+        published_date:
+          type: string
+          nullable: true
+          format: date
+          description: The date this resource was published, often only year-month-day.
+        publisher:
+          type: string
+          nullable: true
+          description: The name of the publisher of this resource.
+        title:
+          type: string
+          nullable: true
+          description: The title of the resource.
+        updated:
+          type: string
+          format: date-time
+          description: The timestamp of when the data for this resource was last updated.
+        year:
+          type: integer
+          nullable: true
+          description: The publication year of this resource.
+        z_authors:
+          type: array
+          nullable: true
+          description: The authors of this resource, formatted as a list of Crossref Contributor objects.
+          items:
+            type: object
+            properties:
+              # Define properties for Crossref Contributor objects if necessary
     OALocation:
       type: object
       properties:
         evidence:
           type: string
-          description: How we found this OA location.
+          description: Describes how this OA location was identified, useful for debugging.
         host_type:
           type: string
-          description: The type of host that serves this OA location.
+          description: The type of host for this OA location, typically 'publisher' or 'repository'.
         is_best:
           type: boolean
-          description: Is this location the best_oa_location for its resource.
+          description: True if this is the best OA location for the resource.
         license:
           type: string
           nullable: true
-          description: The license under which this copy is published.
+          description: The license under which this copy is published, or null if unknown.
         oa_date:
           type: string
           nullable: true
-          description: When this document first became available at this location.
+          format: date
+          description: The date when the document first became available at this location.
         pmh_id:
           type: string
           nullable: true
-          description: OAI-PMH endpoint where we found this location.
+          description: The OAI-PMH endpoint ID where this location was found, if applicable.
         updated:
           type: string
-          description: Time when the data for this location was last updated.
+          format: date-time
+          description: The timestamp when the data for this location was last updated.
         url:
           type: string
-          description: The URL for a landing page describing this OA copy.
+          description: The URL for the landing page or PDF of this OA copy, depending on availability.
+        url_for_landing_page:
+          type: string
+          description: The URL for the landing page describing this OA copy.
         url_for_pdf:
           type: string
           nullable: true
-          description: The URL with a PDF version of this OA copy.
+          description: The URL for the PDF version of this OA copy.
         version:
           type: string
-          description: The content version accessible at this location.
-
+          description: The content version available at this location, following the DRIVER Guidelines v2.0 version standard.
