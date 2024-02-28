@@ -73,21 +73,42 @@ paths:
                   $ref: "#/components/schemas/SearchResult"
 components:
   schemas:
-    DOIObject:
+    # Other schemas...
+    OALocation:
       type: object
       properties:
-        # ... other properties ...
-        oa_locations_embargoed:
-          type: array
-          items:
-            $ref: "#/components/schemas/OALocation" # Fixed missing items schema
+        evidence:
+          type: string
+          description: How we found this OA location.
+        host_type:
+          type: string
+          description: The type of host that serves this OA location.
+        is_best:
+          type: boolean
+          description: Is this location the best_oa_location for its resource.
+        license:
+          type: string
           nullable: true
-          description: List of OA Location objects associated with this resource that are not yet available.
-        # ... other properties ...
-        z_authors:
-          type: array
-          items:
-            type: object # Assuming no detailed schema; replace with specific schema if available
+          description: The license under which this copy is published.
+        oa_date:
+          type: string
           nullable: true
-          description: List of Crossref Contributor objects, or null.
-        # ... other properties ...
+          description: When this document first became available at this location.
+        pmh_id:
+          type: string
+          nullable: true
+          description: OAI-PMH endpoint where we found this location.
+        updated:
+          type: string
+          description: Time when the data for this location was last updated.
+        url:
+          type: string
+          description: The URL for a landing page describing this OA copy.
+        url_for_pdf:
+          type: string
+          nullable: true
+          description: The URL with a PDF version of this OA copy.
+        version:
+          type: string
+          description: The content version accessible at this location.
+
