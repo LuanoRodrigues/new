@@ -6,40 +6,11 @@ info:
 servers:
   - url: https://api.unpaywall.org/v2
 paths:
-  /{doi}:
-    get:
-      summary: Get OA status and bibliographic info for a given DOI
-      description: Retrieves OA status and bibliographic information for a specified DOI-assigned resource.
-      operationId: getDOIInfo # Fixed missing operationId
-      parameters:
-        - name: doi
-          in: path
-          description: DOI of the resource
-          required: true
-          schema:
-            type: string
-          example: "10.1038/nature12373"
-        - name: email
-          in: query
-          description: Your email for authentication
-          required: true
-          schema:
-            type: string
-          example: "your_email@example.com"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DOIObject"
   /search:
     get:
       summary: Search for articles
-      description: |
-        Provides the full GET /v2/:doi responses for articles whose titles match your query.
-        50 results are returned per request and the page argument requests pages after the first.
-      operationId: searchArticles # Fixed missing operationId
+      description: Provides the full GET /v2/:doi responses for articles whose titles match your query.
+      operationId: searchArticles
       parameters:
         - name: query
           in: query
@@ -62,6 +33,13 @@ paths:
           schema:
             type: integer
           example: 1
+        - name: email
+          in: query
+          description: Your email for authentication and identification.
+          required: true
+          schema:
+            type: string
+          example: "luhan.servidor@gmail.com"
       responses:
         '200':
           description: OK
@@ -71,6 +49,34 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/SearchResult"
+
+  /{doi}:
+    get:
+      summary: Get OA status and bibliographic info for a given DOI
+      description: Retrieves OA status and bibliographic information for a specified DOI-assigned resource.
+      operationId: getDOIInfo
+      parameters:
+        - name: doi
+          in: path
+          description: DOI of the resource
+          required: true
+          schema:
+            type: string
+          example: "10.1038/nature12373"
+        - name: email
+          in: query
+          description: Your email for authentication and identification.
+          required: true
+          schema:
+            type: string
+          example: "luhan.servidor@gmail.com"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DOIObject"
 components:
   schemas:
     # Other schemas...
