@@ -76,7 +76,6 @@ paths:
                   $ref: '#/components/schemas/DOIObject'
         400:
           description: Invalid query parameters provided.
-
 components:
   schemas:
     DOIObject:
@@ -85,74 +84,74 @@ components:
         best_oa_location:
           $ref: '#/components/schemas/OALocation'
           nullable: true
-          description: The best OA Location Object found for this DOI, determined by an algorithm prioritizing publisher-hosted content first, versions closer to the version of record second, and more authoritative repositories third. Returns null if no OA Locations are found.
+          description: The best OA Location Object found for this DOI.
         data_standard:
           type: integer
-          description: Indicates the data collection approaches used for this resource. Value 1 represents first-generation hybrid detection using only Crossref API data, mostly effective for Elsevier articles. Value 2 represents second-generation hybrid detection, checking all publishers and significantly increasing hybrid article detection.
+          description: Indicates the data collection approaches used for this resource.
         doi:
           type: string
-          description: The DOI of this resource, always in lowercase.
+          description: The DOI of this resource.
         doi_url:
           type: string
-          description: The DOI formatted as a hyperlink according to Crossref DOI display guidelines.
+          description: The DOI in hyperlink form.
         genre:
           type: string
           nullable: true
-          description: The type of resource, usually identical to the Crossref-reported type.
+          description: The type of resource.
         is_paratext:
           type: boolean
-          description: Whether the item is considered ancillary to the main content, like a table of contents or index.
+          description: Whether the item is an ancillary part of a journal.
         is_oa:
           type: boolean
-          description: True if there is an OA copy of this resource, determined by the presence of a best_oa_location.
+          description: Whether there is an OA copy of this resource.
         journal_is_in_doaj:
           type: boolean
-          description: Whether this resource is published in a journal indexed by DOAJ, useful for identifying Gold OA resources.
+          description: Whether this resource is published in a DOAJ-indexed journal.
         journal_is_oa:
           type: boolean
-          description: Whether this resource is published in a fully OA journal.
+          description: Whether this resource is published in a completely OA journal.
         journal_issns:
           type: string
           nullable: true
-          description: Any ISSNs assigned to the journal publishing this resource, separated by commas if multiple.
+          description: Any ISSNs assigned to the journal.
         journal_issn_l:
           type: string
           nullable: true
-          description: A single ISSN for the journal, used as a primary key when multiple ISSNs exist.
+          description: A single ISSN for the journal.
         journal_name:
           type: string
           nullable: true
-          description: The name of the journal publishing this resource, which may vary in string representation.
+          description: The name of the journal.
         oa_locations:
           type: array
           items:
             $ref: '#/components/schemas/OALocation'
-          description: A list of all OA Location objects associated with this resource.
+          description: List of all OA Location objects associated with this resource.
         oa_locations_embargoed:
           type: array
           items:
             $ref: '#/components/schemas/OALocation'
           nullable: true
-          description: OA Location objects associated with this resource that are not yet available due to embargo policies.
+          description: OA Location objects that are not yet available.
         first_oa_location:
           $ref: '#/components/schemas/OALocation'
           nullable: true
-          description: The first OA Location Object available for this resource, based on the oa_date.
+          description: The first OA Location Object available for this resource.
         oa_status:
           type: string
-          description: The OA status or 'color' of this resource, such as gold, hybrid, bronze, green, or closed.
+          description: The OA status of this resource.
         has_repository_copy:
           type: boolean
-          description: True if there is a copy of this resource in a repository.
+          description: Whether there is a copy of this resource in a repository.
         published_date:
           type: string
           nullable: true
           format: date
-          description: The date this resource was published, often only year-month-day.
+          description: The date this resource was published.
         publisher:
           type: string
           nullable: true
-          description: The name of the publisher of this resource.
+          description: The name of the publisher.
         title:
           type: string
           nullable: true
@@ -160,7 +159,7 @@ components:
         updated:
           type: string
           format: date-time
-          description: The timestamp of when the data for this resource was last updated.
+          description: Time when the data for this resource was last updated.
         year:
           type: integer
           nullable: true
@@ -168,43 +167,52 @@ components:
         z_authors:
           type: array
           nullable: true
-          description: The authors of this resource, formatted as a list of Crossref Contributor objects.
           items:
             type: object
             properties:
-              # Define properties for Crossref Contributor objects if necessary
+              given:
+                type: string
+                description: The given (first) name of the author.
+              family:
+                type: string
+                description: The family (last) name of the author.
+              affiliation:
+                type: array
+                items:
+                  type: string
+                description: The affiliations of the author.
     OALocation:
       type: object
       properties:
         evidence:
           type: string
-          description: Describes how this OA location was identified, useful for debugging.
+          description: How this OA location was found.
         host_type:
           type: string
-          description: The type of host for this OA location, typically 'publisher' or 'repository'.
+          description: The type of host that serves this OA location.
         is_best:
           type: boolean
-          description: True if this is the best OA location for the resource.
+          description: Whether this location is the best OA location for the resource.
         license:
           type: string
           nullable: true
-          description: The license under which this copy is published, or null if unknown.
+          description: The license under which this copy is published.
         oa_date:
           type: string
           nullable: true
           format: date
-          description: The date when the document first became available at this location.
+          description: When this document first became available.
         pmh_id:
           type: string
           nullable: true
-          description: The OAI-PMH endpoint ID where this location was found, if applicable.
+          description: The OAI-PMH endpoint ID.
         updated:
           type: string
           format: date-time
-          description: The timestamp when the data for this location was last updated.
+          description: When the data for this location was last updated.
         url:
           type: string
-          description: The URL for the landing page or PDF of this OA copy, depending on availability.
+          description: The URL for the landing page or PDF of this OA copy.
         url_for_landing_page:
           type: string
           description: The URL for the landing page describing this OA copy.
@@ -214,4 +222,4 @@ components:
           description: The URL for the PDF version of this OA copy.
         version:
           type: string
-          description: The content version available at this location, following the DRIVER Guidelines v2.0 version standard.
+          description: The content version available at this location.
