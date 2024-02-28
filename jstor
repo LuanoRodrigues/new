@@ -1,42 +1,22 @@
 openapi: 3.0.2
 info:
-  title: Annotations API
+  title: JSTOR Labs API
   version: 0.1.0
 servers:
-  - url: /api/anno
+  - url: https://labs.jstor.org/api/anno
 paths:
-  /:
-    get:
-      summary: Main
-      operationId: main__get
-      responses:
-        200:
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
-  /docs/:
-    get:
-      summary: Main
-      operationId: main_docs__get
-      responses:
-        200:
-          description: Successful Response
-          content:
-            application/json:
-              schema: {}
   /metadata/{doi}:
     get:
       summary: Metadata
       description: Returns basic bibliographic metadata for provided DOI.
-      operationId: metadata_metadata__doi__get
+      operationId: getMetadata
       parameters:
-        - required: true
-          schema:
-            title: Doi
-            type: string
+        - in: path
           name: doi
-          in: path
+          required: true
+          schema:
+            type: string
+          description: Digital Object Identifier for the desired document.
       responses:
         200:
           description: Successful Response
@@ -52,85 +32,74 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
   /pdf/{doi}:
     get:
-      summary: Pdf Url
-      description: >
-        Returns a download URL for a PDF associated with the provided DOI if the account identified by the
-        provided site_code is authorized access. The site_code is provided as a claim in a JWT included in the
-        request "Authorization" header.
-      operationId: pdf_url_pdf__doi__get
+      summary: PDF Url
+      description: Returns a download URL for a PDF associated with the provided DOI.
+      operationId: getPDFUrl
       parameters:
-        - required: true
-          schema:
-            title: Doi
-            type: string
+        - in: path
           name: doi
-          in: path
-        - required: false
+          required: true
           schema:
-            title: Original
+            type: string
+          description: Digital Object Identifier for the desired document.
+        - in: query
+          name: original
+          schema:
             type: boolean
             default: false
-          name: original
-          in: query
-        - required: false
-          schema:
-            title: Authorization
-            type: string
+          description: Flag indicating whether the original PDF should be retrieved.
+        - in: header
           name: authorization
-          in: header
+          schema:
+            type: string
+          description: JWT token for authorization.
       responses:
         200:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                type: string
         422:
           description: Validation Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
-      security:
-        - JWTBearer: []
   /thumbnail/{doi}:
     get:
       summary: Thumbnail
-      description: Returns data_url encoded thumbnail image for provided DOI. The default thumbnail size is 150 pixels on the long side.
-      operationId: thumbnail_thumbnail__doi__get
+      description: Returns a data_url encoded thumbnail image for provided DOI.
+      operationId: getThumbnail
       parameters:
-        - required: true
-          schema:
-            title: Doi
-            type: string
+        - in: path
           name: doi
-          in: path
-        - required: false
+          required: true
           schema:
-            title: Offset
-            type: integer
-            default: 0
+            type: string
+          description: Digital Object Identifier for the desired document.
+        - in: query
           name: offset
-          in: query
-        - required: false
           schema:
-            title: Width
             type: integer
             default: 0
+        - in: query
           name: width
-          in: query
-        - required: false
           schema:
-            title: Height
             type: integer
-            default: 0
+            default: 150
+        - in: query
           name: height
-          in: query
+          schema:
+            type: integer
+            default: 150
       responses:
         200:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                type: string
         422:
           description: Validation Error
           content:
@@ -140,138 +109,93 @@ paths:
 components:
   schemas:
     HTTPValidationError:
-      title: HTTPValidationError
       type: object
       properties:
         detail:
-          title: Detail
           type: array
           items:
             $ref: '#/components/schemas/ValidationError'
     MetadataResponse:
-      title: MetadataResponse
       type: object
       properties:
         abstract:
-          title: Abstract
           type: string
         article_type:
-          title: Article Type
           type: string
         authors:
-          title: Authors
           type: array
           items:
             type: string
         book_subtitle:
-          title: Book Subtitle
           type: string
         book_title:
-          title: Book Title
           type: string
         citation_line:
-          title: Citation Line
           type: string
         content_type:
-          title: Content Type
           type: string
         disciplines:
-          title: Disciplines
           type: array
           items:
             type: string
-          description: JSTOR Disciplines
         doi:
-          title: Doi
           type: string
         env:
-          title: Env
           type: string
         id:
-          title: Id
           type: string
         issue:
-          title: Issue
           type: string
         item_type:
-          title: Item Type
           type: string
         has_pdf:
-          title: Has Pdf
           type: boolean
         jcode:
-          title: Jcode
           type: string
         journal:
-          title: Journal
           type: string
         languages:
-          title: Languages
           type: array
           items:
             type: string
-          description: Language codes
         next:
-          title: Next
           type: string
         page_count:
-          title: Page Count
           type: integer
         page_range:
-          title: Page Range
           type: string
         parent:
-          title: Parent
           type: string
         previous:
-          title: Previous
           type: string
         pubdate:
-          title: Pubdate
           type: string
         provider_designation_statement:
-          title: Provider Designation Statement
           type: string
         requestor_access_level:
-          title: Requestor Access Level
           type: string
         requestor_affiliation:
-          title: Requestor Affiliation
           type: string
         reviewed_works:
-          title: Reviewed Works
           type: array
           items:
             type: string
         subtitle:
-          title: Subtitle
           type: string
         title:
-          title: Title
           type: string
         volume:
-          title: Volume
           type: string
         year:
-          title: Year
           type: integer
     ValidationError:
-      title: ValidationError
-      required: ["loc", "msg", "type"]
       type: object
       properties:
         loc:
-          title: Location
           type: array
           items:
             type: string
         msg:
-          title: Message
           type: string
         type:
-          title: Error Type
           type: string
-  securitySchemes:
-    JWTBearer:
-      type: http
-      scheme: bearer
