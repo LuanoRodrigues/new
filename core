@@ -1,11 +1,20 @@
 openapi: 3.0.3
 info:
-  title: CORE API
-  description: This document specifies the REST API for the CORE platform.
-  version: 1.0.0
+  title: IOTA CORE REST API
+  description: This document specifies the REST API for IOTA CORE node software.
+  contact:
+    email: contact@iota.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 3.0.0
+externalDocs:
+  description: Find out more about IOTA
+  url: 'https://iota.org'
 servers:
-  - url: 'https://api.core.ac.uk/v3' # Removed trailing slash to avoid double slash in the request URL
-/search/{entityType}:
+  - url: 'https://api.core.ac.uk/v3'
+paths:
+  /search/{entityType}:
     get:
       tags:
         - Search
