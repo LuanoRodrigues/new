@@ -12,7 +12,8 @@ externalDocs:
   description: Find out more about IOTA
   url: 'https://iota.org'
 servers:
-  - url: 'https://api.core.ac.uk/v3'
+  - url: 'https://api.core.ac.uk/v3'  # Removed trailing slash
+
 paths:
   /search/{entityType}:
     get:
@@ -61,24 +62,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  total_hits:
-                    type: integer
-                  results:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        title:
-                          type: string
-                        abstract:
-                          type: string
-                          nullable: true
-                          description: The abstract of the entity, providing a summary of the content.
-components:
+                $ref: '#/components/schemas/SearchResults'  # Referenced SearchResults schema
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'  # Added ErrorResponse schema reference
+
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -115,3 +106,15 @@ components:
         downloadUrl:
           type: string
           format: uri
+    ErrorResponse:
+      type: object
+      properties:
+        response_data:
+          type: object
+          properties:
+            message:
+              type: string
+        status_code:
+          type: integer
+        action_id:
+          type: string
