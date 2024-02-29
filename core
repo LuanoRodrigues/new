@@ -5,21 +5,35 @@ info:
   version: 1.0.0
 servers:
   - url: 'https://api.core.ac.uk/v3' # Removed trailing slash to avoid double slash in the request URL
-paths:
-  /search/works:
+/search/{entityType}:
     get:
       tags:
         - Search
-      summary: Search through works entities and retrieve details including abstracts.
-      description: Search into works entities based on the query. Designed to retrieve detailed information including abstracts.
-      operationId: searchWorks
+      summary: Search through all CORE entities
+      description: >
+        Search into all CORE entities. See our query language section to understand how to query the CORE data.
+      operationId: searchCoreEntities
       parameters:
+        - name: entityType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [works, outputs, data-providers, journals]
+          description: Type of the entity to search.
         - name: q
           in: query
           required: true
           schema:
             type: string
           description: Free text search query.
+        - name: includeAbstracts
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Flag to include abstracts in the search results.
         - name: limit
           in: query
           schema:
@@ -34,7 +48,7 @@ paths:
           description: The offset from the beginning of the result set.
       responses:
         '200':
-          description: Search results containing works entities along with their abstracts if available.
+          description: Contains the entities matching the search query.
           content:
             application/json:
               schema:
@@ -54,7 +68,8 @@ paths:
                         abstract:
                           type: string
                           nullable: true
-                          description: The abstract of the work, providing a summary
+                          description: The abstract of the entity, providing a summary of the content.
+components:
 components:
   securitySchemes:
     ApiKeyAuth:
