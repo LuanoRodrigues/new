@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   title: CORE API
-  description: This document specifies the REST API for the CORE platform.
-  version: 3.0.0
+  description: This document specifies the REST API for searching and retrieving abstracts from the CORE platform.
+  version: 1.0.0
 servers:
   - url: 'https://api.core.ac.uk/v3/'
 paths:
@@ -10,8 +10,11 @@ paths:
     get:
       tags:
         - Search
-      summary: Search through all CORE entities together
-      description: Search into all CORE entities. See our query language section to understand how to query the CORE data.
+      summary: Search through all CORE entities and retrieve abstracts.
+      description: >-
+        Search into all CORE entities based on the query and entity type. This endpoint
+        is specifically designed to retrieve detailed abstracts along with the search results.
+      operationId: searchWithAbstracts
       parameters:
         - name: entityType
           in: path
@@ -19,39 +22,35 @@ paths:
           schema:
             type: string
             enum: [works, outputs, data-providers, journals]
-          description: Type of the entity to search.
+          description: Type of the entity to search within.
         - name: q
           in: query
           required: true
           schema:
             type: string
           description: Free text search query.
-        - name: scroll
+        - name: includeAbstracts
           in: query
+          required: false
           schema:
             type: boolean
-          description: Enable scroll pagination for result sets bigger than 10,000 items.
-        - name: offset
-          in: query
-          schema:
-            type: integer
-            default: 0
-          description: The offset from the result set to start the results.
+            default: true
+          description: Flag to include abstracts in the search results.
         - name: limit
           in: query
           schema:
             type: integer
             default: 10
-          description: The maximum size of the search results.
-        - name: stats
+          description: The maximum number of search results to return.
+        - name: offset
           in: query
           schema:
-            type: boolean
-            default: false
-          description: If true, includes statistics related to the entity in the search results.
+            type: integer
+            default: 0
+          description: The offset from the beginning of the result set.
       responses:
         '200':
-          description: Contains the entities matching the search query.
+          description: Search results containing entities along with their abstracts if available.
           content:
             application/json:
               schema:
@@ -59,21 +58,18 @@ paths:
                 properties:
                   total_hits:
                     type: integer
-                  limit:
-                    type: integer
-                  offset:
-                    type: integer
-                  scroll_id:
-                    type: string
                   results:
                     type: array
-                    items: {}
-                  tooks:
-                    type: array
                     items:
-                      type: string
-                  es_took:
-                    type: integer
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        abstract:
+                          type: string
+                          description: The abstract of the entity, providing a summary of the content.
 security:
   - ApiKeyAuth: []
 components:
@@ -82,4 +78,4 @@ components:
       type: apiKey
       in: header
       name: Authorization
-      description: API key for access to CORE API.
+      description: API key needed to authorize requests.
