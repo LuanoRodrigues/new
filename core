@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: CORE API
-  description: This document specifies the REST API for searching and retrieving abstracts from the CORE platform.
+  description: This document specifies the REST API for the CORE platform.
   version: 1.0.0
 servers:
   - url: 'https://api.core.ac.uk/v3/'
@@ -11,9 +11,7 @@ paths:
       tags:
         - Search
       summary: Search through all CORE entities and retrieve abstracts.
-      description: >-
-        Search into all CORE entities based on the query and entity type. This endpoint
-        is specifically designed to retrieve detailed abstracts along with the search results.
+      description: Search into all CORE entities based on the query and entity type.
       operationId: searchWithAbstracts
       parameters:
         - name: entityType
@@ -28,14 +26,7 @@ paths:
           required: true
           schema:
             type: string
-          description: Free text search query.
-        - name: includeAbstracts
-          in: query
-          required: false
-          schema:
-            type: boolean
-            default: true
-          description: Flag to include abstracts in the search results.
+          description: Free text search query including abstracts.
         - name: limit
           in: query
           schema:
@@ -54,22 +45,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  total_hits:
-                    type: integer
-                  results:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        title:
-                          type: string
-                        abstract:
-                          type: string
-                          description: The abstract of the entity, providing a summary of the content.
+                $ref: '#/components/schemas/SearchResults'
 security:
   - ApiKeyAuth: []
 components:
@@ -79,3 +55,32 @@ components:
       in: header
       name: Authorization
       description: API key needed to authorize requests.
+  schemas:
+    SearchResults:
+      type: object
+      properties:
+        total_hits:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+    SearchResult:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        abstract:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        date:
+          type: string
+          format: date
+        downloadUrl:
+          type: string
+          format: uri
