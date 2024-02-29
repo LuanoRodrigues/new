@@ -1,18 +1,27 @@
 openapi: 3.0.3
 info:
-  title: CORE API
-  description: This document specifies the REST API for the CORE platform.
-  version: 1.0.0
+  title: IOTA CORE REST API
+  description: This document specifies the REST API for IOTA CORE node software.
+  contact:
+    email: contact@iota.org
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 3.0.0
+externalDocs:
+  description: Find out more about IOTA
+  url: 'https://iota.org'
 servers:
-  - url: 'https://api.core.ac.uk/v3/'
+  - url: 'https://api.core.ac.uk/v3'
 paths:
   /search/{entityType}:
     get:
       tags:
         - Search
-      summary: Search through all CORE entities and retrieve abstracts.
-      description: Search into all CORE entities based on the query and entity type.
-      operationId: searchWithAbstracts
+      summary: Search through all CORE entities
+      description: >
+        Search into all CORE entities. See our query language section to understand how to query the CORE data.
+      operationId: searchCoreEntities
       parameters:
         - name: entityType
           in: path
@@ -20,13 +29,20 @@ paths:
           schema:
             type: string
             enum: [works, outputs, data-providers, journals]
-          description: Type of the entity to search within.
+          description: Type of the entity to search.
         - name: q
           in: query
           required: true
           schema:
             type: string
-          description: Free text search query including abstracts.
+          description: Free text search query.
+        - name: includeAbstracts
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Flag to include abstracts in the search results.
         - name: limit
           in: query
           schema:
@@ -41,13 +57,28 @@ paths:
           description: The offset from the beginning of the result set.
       responses:
         '200':
-          description: Search results containing entities along with their abstracts if available.
+          description: Contains the entities matching the search query.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchResults'
-security:
-  - ApiKeyAuth: []
+                type: object
+                properties:
+                  total_hits:
+                    type: integer
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        abstract:
+                          type: string
+                          nullable: true
+                          description: The abstract of the entity, providing a summary of the content.
+components:
 components:
   securitySchemes:
     ApiKeyAuth:
