@@ -12,7 +12,7 @@ externalDocs:
   description: Find out more about IOTA
   url: 'https://iota.org'
 servers:
-  - url: 'https://api.core.ac.uk/v3'  # Removed trailing slash
+  - url: 'https://api.core.ac.uk/v3'
 
 paths:
   /search/{entityType}:
@@ -46,12 +46,14 @@ paths:
           description: Flag to include abstracts in the search results.
         - name: limit
           in: query
+          required: false
           schema:
             type: integer
             default: 10
           description: The maximum number of search results to return.
         - name: offset
           in: query
+          required: false
           schema:
             type: integer
             default: 0
@@ -62,17 +64,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SearchResults'  # Referenced SearchResults schema
+                $ref: '#/components/schemas/SearchResults'
+        '401':
+          description: Unauthorized, missing or invalid API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'  # Added ErrorResponse schema reference
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
-    ApiKeyAuth:
+    ApiKeyAuth:   # If you're using a Bearer token, change this to BearerAuth and adjust accordingly
       type: apiKey
       in: header
       name: Authorization
