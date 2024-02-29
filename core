@@ -1,48 +1,25 @@
 openapi: 3.0.3
 info:
-  title: IOTA CORE REST API
-  description: This document specifies the REST API for IOTA CORE node software.
-  contact:
-    email: contact@iota.org
-  license:
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  version: 3.0.0
-externalDocs:
-  description: Find out more about IOTA
-  url: 'https://iota.org'
+  title: CORE API
+  description: This document specifies the REST API for the CORE platform.
+  version: 1.0.0
 servers:
-  - url: 'https://api.core.ac.uk/v3'
+  - url: 'https://api.core.ac.uk/v3' # Removed trailing slash to avoid double slash in the request URL
 paths:
-  /search/{entityType}:
+  /search/works:
     get:
       tags:
         - Search
-      summary: Search through all CORE entities
-      description: >
-        Search into all CORE entities. See our query language section to understand how to query the CORE data.
-      operationId: searchCoreEntities
+      summary: Search through works entities and retrieve details including abstracts.
+      description: Search into works entities based on the query. Designed to retrieve detailed information including abstracts.
+      operationId: searchWorks
       parameters:
-        - name: entityType
-          in: path
-          required: true
-          schema:
-            type: string
-            enum: [works, outputs, data-providers, journals]
-          description: Type of the entity to search.
         - name: q
           in: query
           required: true
           schema:
             type: string
           description: Free text search query.
-        - name: includeAbstracts
-          in: query
-          required: false
-          schema:
-            type: boolean
-            default: false
-          description: Flag to include abstracts in the search results.
         - name: limit
           in: query
           schema:
@@ -57,7 +34,7 @@ paths:
           description: The offset from the beginning of the result set.
       responses:
         '200':
-          description: Contains the entities matching the search query.
+          description: Search results containing works entities along with their abstracts if available.
           content:
             application/json:
               schema:
@@ -77,8 +54,7 @@ paths:
                         abstract:
                           type: string
                           nullable: true
-                          description: The abstract of the entity, providing a summary of the content.
-components:
+                          description: The abstract of the work, providing a summary
 components:
   securitySchemes:
     ApiKeyAuth:
